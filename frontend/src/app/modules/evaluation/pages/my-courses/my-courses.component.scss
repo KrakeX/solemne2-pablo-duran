@@ -1,0 +1,119 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+
+  label {
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
+
+    select {
+      padding: 6px 8px;
+      min-width: 160px;
+    }
+  }
+
+  button {
+    padding: 8px 10px;
+  }
+}
+
+.state {
+  padding: 16px 0;
+}
+
+.error {
+  color: #b00020;
+}
+
+.warning {
+  border: 1px solid #f0c36d;
+  background: #fff7e6;
+  padding: 12px;
+  margin: 14px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    border-bottom: 1px solid #e7e7e7;
+    padding: 10px 8px;
+    text-align: left;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+
+  &.ok {
+    background: #e7f7ee;
+    border: 1px solid #bfe6cc;
+  }
+  &.pending {
+    background: #fff1f1;
+    border: 1px solid #f0c2c2;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    padding: 6px 10px;
+  }
+}
+
+.drawer {
+  margin-top: 16px;
+  border: 1px solid #e7e7e7;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+
+  button {
+    padding: 6px 10px;
+  }
+}
+
+.drawer-body {
+  display: grid;
+  gap: 8px;
+}
+
+.comment {
+  margin: 0;
+  padding: 10px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.muted {
+  color: #666;
+  font-size: 12px;
+}
