@@ -1,8 +1,11 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
+import { AppRoutingModule } from './app-routing.module';
+
+import { SharedModule } from './shared/shared.module';
 import { NotFound } from './pages/not-found/not-found';
 
 @NgModule({
@@ -12,11 +15,13 @@ import { NotFound } from './pages/not-found/not-found';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule,
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideClientHydration(withEventReplay())
+    provideClientHydration(withEventReplay()),
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [App]
 })
