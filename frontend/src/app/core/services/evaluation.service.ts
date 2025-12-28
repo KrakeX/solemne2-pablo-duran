@@ -70,4 +70,8 @@ export class EvaluationService {
     if (careerId) params = params.set('careerId', careerId);
     return this.http.get<ReportDistributionDto[]>(`${this.baseUrl}/reports/distribution`, { params });
   }
+
+  getEnrollmentById(enrollmentId: string) {
+  return this.http.get<StudentEnrollmentDto>(`${this.baseUrl}/enrollments/${enrollmentId}`);
+}
 }

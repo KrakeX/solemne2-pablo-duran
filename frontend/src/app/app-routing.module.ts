@@ -10,7 +10,7 @@ const routes: Routes = [
   {
     path: 'evaluation',
     loadChildren: () =>
-      import('./modules/evaluation/evaluation-module').then((m) => m.EvaluationModule),
+      import('./modules/evaluation/evaluation.module').then((m) => m.EvaluationModule),
   },
   {
     path: 'teachers',

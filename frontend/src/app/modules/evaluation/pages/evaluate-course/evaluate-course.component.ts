@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
+import type { FormGroup } from '@angular/forms';
 
-import { Observable, Subscription, combineLatest, switchMap } from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import { PeriodDto, StudentEnrollmentDto } from '../../../../core/models/api.models';
-import { CatalogService } from '../../../../core/services/catalog.service';
+import { StudentEnrollmentDto } from '../../../../core/models/api.models';
 import { EvaluationService } from '../../../../core/services/evaluation.service';
-import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-evaluate-course',
@@ -24,66 +23,47 @@ export class EvaluateCourseComponent implements OnInit, OnDestroy {
   error: string | null = null;
 
   enrollment: StudentEnrollmentDto | null = null;
-  private periods: PeriodDto[] = [];
-  private studentId: string | null = null;
-  private sub = new Subscription();
 
-  form!: ReturnType<typeof this.fb.group>;
+  form: FormGroup;
+
+  private sub = new Subscription();
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly fb: FormBuilder,
     private readonly evalService: EvaluationService,
-    private readonly catalogService: CatalogService,
-    private readonly sessionService: SessionService,
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.form = this.fb.group({
       score: [null as number | null, [Validators.required, Validators.min(1), Validators.max(7)]],
       comment: ['', [Validators.required, Validators.minLength(10)]],
     });
+  }
 
+  ngOnInit(): void {
     this.enrollmentId = this.route.snapshot.paramMap.get('enrollmentId')!;
-
     this.loading = true;
 
-    // Traemos periods + studentId y luego buscamos el enrollment en el periodo más reciente.
-    // (Como el enrollmentId es único, igual lo resolvemos desde el listado del periodo actual)
     this.sub.add(
-      combineLatest([this.catalogService.getPeriods(), this.sessionService.studentId$])
-        .pipe(
-          switchMap(([periods, studentId]) => {
-            this.periods = periods;
-            this.studentId = studentId;
+      this.evalService.getEnrollmentById(this.enrollmentId).subscribe({
+        next: (enrollment) => {
+          this.enrollment = enrollment;
 
-            if (!studentId) throw new Error('No se pudo resolver el estudiante demo');
+          if (enrollment.evaluated) {
+            this.form.disable();
+            this.form.patchValue({
+              score: enrollment.evaluation?.score ?? null,
+              comment: enrollment.evaluation?.comment ?? '',
+            });
+          }
 
-            // Intentamos encontrar el enrollment recorriendo periodos (desc)
-            return this.findEnrollmentBySearchingPeriods(studentId, periods);
-          }),
-        )
-        .subscribe({
-          next: (enrollment) => {
-            this.enrollment = enrollment;
-
-            if (enrollment?.evaluated) {
-              // Si ya está evaluado, bloqueamos y mostramos info
-              this.form.disable();
-              this.form.patchValue({
-                score: enrollment?.evaluation?.score ?? null,
-                comment: enrollment?.evaluation?.comment ?? '',
-              });
-            }
-
-            this.loading = false;
-          },
-          error: (err) => {
-            this.loading = false;
-            this.error = this.getErrorMessage(err);
-          },
-        }),
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = this.getErrorMessage(err);
+        },
+      }),
     );
   }
 
@@ -98,7 +78,7 @@ export class EvaluateCourseComponent implements OnInit, OnDestroy {
     return this.form.controls['comment'];
   }
 
-  async submit() {
+  submit() {
     if (!this.enrollment) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -120,8 +100,6 @@ export class EvaluateCourseComponent implements OnInit, OnDestroy {
         next: () => {
           this.submitting = false;
           this.success = true;
-
-          // Volver a la lista después de un pequeño delay “natural”
           setTimeout(() => this.router.navigate(['/evaluation']), 600);
         },
         error: (err) => {
@@ -134,34 +112,6 @@ export class EvaluateCourseComponent implements OnInit, OnDestroy {
 
   back() {
     this.router.navigate(['/evaluation']);
-  }
-
-  private findEnrollmentBySearchingPeriods(studentId: string, periods: PeriodDto[]): Observable<StudentEnrollmentDto> {
-    // Buscamos en periodos en orden (ya vienen DESC desde API).
-    // Implementación: consulta por periodo y busca el enrollmentId en el array.
-    return new (class {
-      constructor(private ctx: EvaluateCourseComponent) {}
-      exec() {
-        return this.ctx.searchInPeriods(studentId, periods, 0);
-      }
-    })(this).exec();
-  }
-
-  private searchInPeriods(studentId: string, periods: PeriodDto[], idx: number): Observable<StudentEnrollmentDto> {
-    if (idx >= periods.length) {
-      throw new Error('No se encontró el enrollment para este estudiante.');
-    }
-    const p = periods[idx];
-
-    return this.evalService.getStudentEnrollments(studentId, p.year, p.semester).pipe(
-      switchMap((rows) => {
-        const found = rows.find((r) => r.enrollmentId === this.enrollmentId);
-        if (found) {
-          return [found];
-        }
-        return this.searchInPeriods(studentId, periods, idx + 1);
-      }),
-    );
   }
 
   private getErrorMessage(err: any): string {
