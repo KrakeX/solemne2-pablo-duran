@@ -1,10 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
 
 import { EvaluationRoutingModule } from './evaluation-routing-module';
-import { MyCourses } from './pages/my-courses/my-courses';
-import { EvaluateCourse } from './pages/evaluate-course/evaluate-course';
 
+import { EvaluateCourse } from './pages/evaluate-course/evaluate-course';
+import { MyCourses } from './pages/my-courses/my-courses';
+
+const routes: Routes = [
+  { path: '', component: MyCourses },
+  { path: ':enrollmentId', component: EvaluateCourse },
+];
 
 @NgModule({
   declarations: [
@@ -12,6 +18,7 @@ import { EvaluateCourse } from './pages/evaluate-course/evaluate-course';
     EvaluateCourse
   ],
   imports: [
+    RouterModule.forChild(routes),
     CommonModule,
     EvaluationRoutingModule
   ]
