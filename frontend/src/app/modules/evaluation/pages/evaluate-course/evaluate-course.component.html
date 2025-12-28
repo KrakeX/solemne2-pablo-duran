@@ -1,0 +1,46 @@
+<section class="header">
+    <h1>Evaluar curso</h1>
+    <button type="button" (click)="back()">Volver</button>
+</section>
+
+<div *ngIf="loading" class="state">Cargando...</div>
+<div *ngIf="error" class="state error">{{ error }}</div>
+
+<div *ngIf="!loading && !error && enrollment">
+    <div class="card">
+        <div><strong>Curso:</strong> {{ enrollment?.course?.name }} ({{ enrollment?.course?.code }})</div>
+        <div><strong>Docente:</strong> {{ enrollment?.course?.teacher?.name }}</div>
+        <div><strong>Carrera:</strong> {{ enrollment?.course?.career?.name }}</div>
+        <div><strong>Periodo:</strong> {{ enrollment?.period?.year }} - {{ enrollment?.period?.semester }}</div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+        <label>
+            Nota (1 a 7)
+            <input type="number" min="1" max="7" formControlName="score" />
+            <small class="hint" *ngIf="score.invalid && (score.dirty || score.touched)">
+                <span *ngIf="score.errors?.['required']">La nota es obligatoria.</span>
+                <span *ngIf="score.errors?.['min'] || score.errors?.['max']">La nota debe estar entre 1 y 7.</span>
+            </small>
+        </label>
+
+        <label>
+            Comentario (obligatorio)
+            <textarea rows="4" formControlName="comment"></textarea>
+            <small class="hint" *ngIf="comment.invalid && (comment.dirty || comment.touched)">
+                <span *ngIf="comment.errors?.['required']">El comentario es obligatorio.</span>
+                <span *ngIf="comment.errors?.['minlength']">El comentario debe tener al menos 10 caracteres.</span>
+            </small>
+        </label>
+
+        <div class="actions">
+            <button type="submit" [disabled]="form.invalid || submitting">
+                {{ submitting ? 'Guardando...' : 'Guardar evaluación' }}
+            </button>
+        </div>
+
+        <div class="state ok" *ngIf="success">
+            Evaluación guardada correctamente.
+        </div>
+    </form>
+</div>

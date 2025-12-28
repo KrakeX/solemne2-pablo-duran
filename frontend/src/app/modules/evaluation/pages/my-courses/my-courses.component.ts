@@ -10,6 +10,7 @@ import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-my-courses',
+  standalone: false,
   templateUrl: './my-courses.component.html',
   styleUrls: ['./my-courses.component.scss'],
 })

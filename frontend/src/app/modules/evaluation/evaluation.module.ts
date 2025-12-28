@@ -5,22 +5,23 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { EvaluationRoutingModule } from './evaluation-routing-module';
 
-import { EvaluateCourse } from './pages/evaluate-course/evaluate-course';
+import { EvaluateCourseComponent } from './pages/evaluate-course/evaluate-course.component';
 import { MyCoursesComponent } from './pages/my-courses/my-courses.component';
 
 
 const routes: Routes = [
   { path: '', component: MyCoursesComponent },
-  { path: ':enrollmentId', component: EvaluateCourse },
+  { path: ':enrollmentId', component: EvaluateCourseComponent },
 ];
 
 @NgModule({
   declarations: [
-    EvaluateCourse
+    MyCoursesComponent,
+    EvaluateCourseComponent
+    
   ],
   imports: [
     RouterModule.forChild(routes),
-    MyCoursesComponent,
     CommonModule,
     EvaluationRoutingModule,
     ReactiveFormsModule,

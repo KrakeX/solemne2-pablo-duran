@@ -1,0 +1,67 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+
+  h1 {
+    margin: 0;
+  }
+
+  button {
+    padding: 8px 10px;
+  }
+}
+
+.state {
+  padding: 12px 0;
+}
+
+.error {
+  color: #b00020;
+}
+
+.ok {
+  color: #0b6b2f;
+}
+
+.card {
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fafafa;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+
+  label {
+    display: grid;
+    gap: 6px;
+
+    input,
+    textarea {
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font: inherit;
+    }
+  }
+}
+
+.hint {
+  color: #b00020;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+
+  button {
+    padding: 10px 12px;
+  }
+}
