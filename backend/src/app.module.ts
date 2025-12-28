@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { SeedModule } from './seed/seed.module';
 import { CareersModule } from './modules/careers/careers.module';
 import { CoursesModule } from './modules/courses/courses.module';
 import { EnrollmentsModule } from './modules/enrollments/enrollments.module';
@@ -37,6 +38,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
     EnrollmentsModule,
     EvaluationsModule,
     ReportsModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
