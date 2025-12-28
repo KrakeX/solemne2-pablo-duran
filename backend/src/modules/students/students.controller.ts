@@ -23,4 +23,17 @@ export class StudentsController {
       semester: Number(semester),
     });
   }
+
+  @Get(':studentId/evaluations')
+  getEvaluations(
+    @Param('studentId', new ParseUUIDPipe()) studentId: string,
+    @Query('year') year: string,
+    @Query('semester') semester: string,
+  ) {
+    return this.studentsService.getEvaluationsByPeriod({
+      studentId,
+      year: Number(year),
+      semester: Number(semester),
+    });
+  }
 }

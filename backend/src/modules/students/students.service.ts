@@ -71,4 +71,49 @@ export class StudentsService {
         : null,
     }));
   }
+
+  async getEvaluationsByPeriod(input: { studentId: string; year: number; semester: number }) {
+    const { studentId, year, semester } = input;
+
+    if (!Number.isInteger(year) || !Number.isInteger(semester)) {
+      throw new BadRequestException('year y semester son requeridos y deben ser números');
+    }
+    if (![1, 2].includes(semester)) throw new BadRequestException('semester debe ser 1 o 2');
+
+    const student = await this.studentsRepo.findOne({ where: { id: studentId } });
+    if (!student) throw new NotFoundException('Student no encontrado');
+
+    const period = await this.periodsRepo.findOne({ where: { year, semester } });
+    if (!period) throw new NotFoundException('Periodo no encontrado');
+
+    // Solo enrollments que ya tienen evaluación (histórico)
+    const enrollmentsWithEval = await this.enrollmentsRepo
+      .createQueryBuilder('enr')
+      .innerJoinAndSelect('enr.evaluation', 'evaluation') // inner join => solo evaluados
+      .leftJoinAndSelect('enr.course', 'course')
+      .leftJoinAndSelect('course.teacher', 'teacher')
+      .leftJoinAndSelect('course.career', 'career')
+      .leftJoinAndSelect('enr.period', 'period')
+      .where('enr.student.id = :studentId', { studentId })
+      .andWhere('period.year = :year', { year })
+      .andWhere('period.semester = :semester', { semester })
+      .orderBy('evaluation.createdAt', 'DESC')
+      .getMany();
+
+    return enrollmentsWithEval.map((e) => ({
+      evaluationId: e.evaluation!.id,
+      createdAt: e.evaluation!.createdAt,
+      score: e.evaluation!.score,
+      comment: e.evaluation!.comment,
+      period: { year: e.period.year, semester: e.period.semester },
+      course: {
+        id: e.course.id,
+        code: e.course.code,
+        name: e.course.name,
+        career: { id: e.course.career.id, name: e.course.career.name },
+        teacher: { id: e.course.teacher.id, name: e.course.teacher.name },
+      },
+      enrollmentId: e.id,
+    }));
+  }
 }
