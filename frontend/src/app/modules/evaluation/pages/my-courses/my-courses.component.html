@@ -1,0 +1,82 @@
+<section class="header">
+  <h1>Mis cursos</h1>
+
+  <div class="filters">
+    <label>
+      Periodo
+      <select [value]="selectedPeriodKey" (change)="onPeriodChange($event)">
+        <option *ngFor="let p of periods" [value]="periodKey(p.year, p.semester)">
+          {{ p.year }} - {{ p.semester }}
+        </option>
+      </select>
+    </label>
+
+    <button type="button" (click)="reload()" [disabled]="loading">Recargar</button>
+  </div>
+</section>
+
+<div *ngIf="loading" class="state">Cargando...</div>
+<div *ngIf="error" class="state error">{{ error }}</div>
+
+<div *ngIf="!loading && !error && enrollments.length === 0" class="state">
+  No tienes cursos inscritos para el periodo seleccionado.
+</div>
+
+<div *ngIf="!loading && !error && enrollments.length > 0">
+  <div *ngIf="pendingCount > 0" class="warning">
+    Advertencia: tienes {{ pendingCount }} curso(s) sin evaluar para este periodo.
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Curso</th>
+        <th>Docente</th>
+        <th>Carrera</th>
+        <th>Estado</th>
+        <th style="width: 160px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of enrollments">
+        <td>{{ e.course.code }}</td>
+        <td>{{ e.course.name }}</td>
+        <td>{{ e.course.teacher.name }}</td>
+        <td>{{ e.course.career.name }}</td>
+        <td>
+          <span class="badge" [class.ok]="e.evaluated" [class.pending]="!e.evaluated">
+            {{ e.evaluated ? 'Evaluado' : 'Pendiente' }}
+          </span>
+        </td>
+        <td class="actions">
+          <button type="button" (click)="goEvaluate(e.enrollmentId)" [disabled]="e.evaluated">
+            Evaluar
+          </button>
+          <button type="button" (click)="viewEvaluation(e)" [disabled]="!e.evaluated">
+            Ver
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Simple viewer de evaluación ya realizada -->
+  <div *ngIf="selectedEvaluation" class="drawer">
+    <div class="drawer-header">
+      <strong>Evaluación</strong>
+      <button type="button" (click)="selectedEvaluation = null">Cerrar</button>
+    </div>
+
+    <div class="drawer-body">
+      <div><strong>Curso:</strong> {{ selectedEvaluation?.course?.name }} ({{ selectedEvaluation?.course?.code }})</div>
+      <div><strong>Docente:</strong> {{ selectedEvaluation?.course?.teacher?.name }}</div>
+      <div><strong>Nota:</strong> {{ selectedEvaluation?.evaluation?.score }}</div>
+      <div><strong>Comentario:</strong></div>
+      <p class="comment">{{ selectedEvaluation?.evaluation?.comment }}</p>
+      <div class="muted">
+        {{ selectedEvaluation?.evaluation?.createdAt }}
+      </div>
+    </div>
+  </div>
+</div>
