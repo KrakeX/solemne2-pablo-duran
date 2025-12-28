@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { HistoryRoutingModule } from './history-routing-module';
+import { HistoryList } from './pages/history-list/history-list';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    HistoryList
+  ],
   imports: [
     CommonModule,
     HistoryRoutingModule
