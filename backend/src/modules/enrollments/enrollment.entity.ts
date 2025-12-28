@@ -1,6 +1,7 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 import { Course } from '../courses/course.entity';
+import { Evaluation } from '../evaluations/evaluation.entity';
 import { Period } from '../periods/period.entity';
 import { Student } from '../students/student.entity';
 
@@ -18,4 +19,7 @@ export class Enrollment {
 
   @ManyToOne(() => Period, { eager: true })
   period: Period;
+
+  @OneToOne(() => Evaluation, (ev) => ev.enrollment)
+  evaluation?: Evaluation;
 }
